@@ -1,1 +1,250 @@
-
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiz Shorts Generator</title>
+<style>
+:root{--bg:#f1f8f2;--card:#fff;--tx:#17301f;--mut:#5b7565;--ac:#2e7d32;--bd:#cfe3d3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c13;--card:#172a1d;--tx:#e6f2e8;--mut:#9bb8a3;--ac:#66bb6a;--bd:#2a4332}}
+:root[data-theme="dark"]{--bg:#0f1c13;--card:#172a1d;--tx:#e6f2e8;--mut:#9bb8a3;--ac:#66bb6a;--bd:#2a4332}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:16px;display:flex;gap:16px;flex-wrap:wrap}
+.col{flex:1 1 380px;min-width:0}.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px}
+h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:0 0 8px;color:var(--ac)}p.s{color:var(--mut);margin:0 0 12px;font-size:13px}
+label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+textarea{resize:vertical}.row{display:flex;gap:8px}.row>*{flex:1}
+button{padding:10px 14px;border:0;border-radius:10px;background:var(--ac);color:#fff;font:600 14px system-ui;cursor:pointer}
+button.g{background:transparent;color:var(--ac);border:1px solid var(--ac)}button:disabled{opacity:.5}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pv{display:flex;flex-direction:column;align-items:center}
+canvas{width:100%;max-width:360px;aspect-ratio:9/16;border-radius:14px;border:1px solid var(--bd);background:#e8f5e9}
+#st{font-size:13px;color:var(--mut);margin-top:8px;text-align:center;min-height:20px}.warn{color:#e65100}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:8px}.chk input{width:auto}
+.seo textarea{min-height:60px}
+</style></head><body>
+<div class="wrap">
+<div class="col">
+<div class="card"><h1>🎓 Quiz Shorts Generator</h1><p class="s">Isi kuis → pilih durasi → preview → export video 9:16 + SEO otomatis.</p>
+<label>Topik / Kategori</label><input id="topic" value="Sains">
+<label>Pertanyaan</label><textarea id="q" rows="2"></textarea>
+<label>Pilihan A / B / C</label>
+<input id="a" placeholder="A"><input id="b" placeholder="B" style="margin-top:6px"><input id="c" placeholder="C" style="margin-top:6px">
+<div class="row"><div><label>Jawaban benar</label><select id="ans"><option>A</option><option>B</option><option>C</option></select></div>
+<div><label>Durasi video</label><select id="dur"><option>15</option><option>20</option><option selected>30</option><option>40</option><option>50</option><option>60</option></select></div></div>
+<label>Alasan / penjelasan jawaban</label><textarea id="r" rows="3"></textarea>
+<label>CTA penutup</label><input id="cta" value="Suka kuisnya? Like, subscribe, dan ikuti untuk kuis seru berikutnya!">
+<label>Nama channel</label><input id="ch" value="Kuis Pintar">
+<label>Suara narator (TTS)</label><select id="voice"></select>
+<div class="chk"><input type="checkbox" id="tts" checked><span>Aktifkan TTS</span></div>
+<div class="chk"><input type="checkbox" id="tab"><span>Sertakan suara TTS di file video (pilih tab ini &amp; centang "Share tab audio")</span></div>
+<div class="btns"><button id="pl">▶ Preview</button><button id="ex">⬇ Export video</button><button class="g" id="cal">🎚 Kalibrasi TTS</button><button class="g" id="jsn">{ } Simpan config JSON</button><button class="g" id="rnd">🎲 Contoh acak</button></div>
+<div id="chk" class="s" style="margin-top:10px"></div></div>
+<div class="card seo"><h2>SEO YouTube Shorts (otomatis)</h2>
+<label>Judul</label><textarea id="sT" rows="2"></textarea>
+<label>Deskripsi</label><textarea id="sD" rows="6"></textarea>
+<label>Tags</label><textarea id="sG" rows="2"></textarea>
+<div class="btns"><button class="g" data-cp="sT">Salin judul</button><button class="g" data-cp="sD">Salin deskripsi</button><button class="g" data-cp="sG">Salin tags</button></div></div>
+</div>
+<div class="col pv"><div class="card" style="width:100%;display:flex;flex-direction:column;align-items:center">
+<canvas id="cv"></canvas><div id="st">Siap.</div></div></div>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+if(!CanvasRenderingContext2D.prototype.roundRect)CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath()};
+const SS=('speechSynthesis' in window)?window.speechSynthesis:{cancel(){},speak(){},getVoices(){return[]}};
+const SAMPLES=[
+{topic:"Sains",q:"Planet apa yang dijuluki Planet Merah?",a:"Venus",b:"Mars",c:"Jupiter",ans:"B",r:"Mars tampak merah karena permukaannya kaya besi oksida, atau karat."},
+{topic:"Geografi",q:"Apa ibu kota negara Australia?",a:"Sydney",b:"Melbourne",c:"Canberra",ans:"C",r:"Canberra dipilih sebagai ibu kota sebagai kompromi antara Sydney dan Melbourne."},
+{topic:"Biologi",q:"Hewan apa yang memiliki jantung paling banyak?",a:"Gurita",b:"Gajah",c:"Lebah",ans:"A",r:"Gurita punya tiga jantung: dua untuk insang dan satu untuk seluruh tubuh."},
+{topic:"Sejarah",q:"Siapa yang memproklamasikan kemerdekaan Indonesia bersama Hatta?",a:"Sudirman",b:"Soekarno",c:"Sjahrir",ans:"B",r:"Soekarno dan Hatta membacakan proklamasi pada 17 Agustus 1945 di Jakarta."}];
+function load(s){['topic','q','a','b','c','ans','r'].forEach(k=>$(k).value=s[k]);seo();check()}
+$('rnd').onclick=()=>load(SAMPLES[Math.floor(Math.random()*SAMPLES.length)]);
+// ---------- voices
+let voices=[];
+function loadVoices(){const all=SS.getVoices();const id=all.filter(v=>v.lang.toLowerCase().startsWith('id'));voices=id.length?id:all;
+$('voice').innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name} (${v.lang})</option>`).join('')||'<option>Default</option>';
+const m=voices.findIndex(v=>/male|pria|andika|damayanti/i.test(v.name)&&!/female/i.test(v.name));if(m>=0)$('voice').value=m}
+loadVoices();if('speechSynthesis' in window)SS.onvoiceschanged=loadVoices;
+// ---------- potongan ucapan & estimasi
+const GAP=.2,CD=5,REV=1.1,END=.25;let running=false,ON=false,SPK=false,ST,SPC=.071;
+const clean=t=>t.replace(/[*_#~`<>]/g,' ').replace(/\s+/g,' ').trim();
+function opt(k){return $(k.toLowerCase()).value}
+function split(id,seg,text){text=clean(text);const parts=text.match(/[^.!?;]+[.!?;]*/g)||[text];const out=[];let cur='';
+for(const x of parts){if((cur+x).length>150&&cur){out.push(cur.trim());cur=x}else cur+=x}if(cur.trim())out.push(cur.trim());
+return out.map((x,i)=>({id:i?id+i:id,seg,text:x}))}
+function pieces(){const ans=$('ans').value;return[...split('q','q',$('q').value),
+...['A','B','C'].map(k=>({id:k,seg:'q',text:`${k}, ${clean(opt(k))}`})),
+...split('j','ans',`Jawabannya ${ans}, ${clean(opt(ans))}`),...split('r','ans',$('r').value),...split('c','cta',$('cta').value)]}
+const spcKey=()=>'spc|'+(voices[+$('voice').value]||{}).name;
+function loadSpc(){try{SPC=+localStorage.getItem(spcKey())||.071}catch(e){SPC=.071}}
+const CALR=1.6;let KC=1,CAL={},calFail=0;
+try{CAL=JSON.parse(localStorage.getItem('quizCAL')||'{}')}catch(e){}
+const vname=()=>(voices[+$('voice').value]||{}).name||'default';
+const ckey=t=>vname()+'|'+t;
+function loadK(){try{KC=+localStorage.getItem('k|'+vname())||1}catch(e){KC=1}}
+const dur1=p=>(CAL[ckey(p.text)]??p.text.length*SPC)*KC;
+function plan(){const D=+$('dur').value,ps=pieces(),n=ps.length,S=ps.reduce((x,p)=>x+dur1(p),0),
+avail=D-(CD+REV+END+.25)-GAP*(n-1),raw=S/avail,r=Math.min(2,Math.max(.95,raw)),slack=Math.max(0,avail-S/r);
+return{D,ps,S,raw,r,extra:Math.min(1.2,slack/Math.max(1,n-1)),cal:ps.every(p=>CAL[ckey(p.text)]!=null)}}
+function idleST(){return{idle:true,ph:'q',phT:0,started:{},active:null,rT:null,D:+$('dur').value}}
+function check(){if(!running)ST=idleST();const P=plan();
+$('chk').innerHTML=(P.raw>2?`<span class="warn">⚠ Teks terlalu panjang untuk ${P.D} detik (butuh kecepatan ×${P.raw.toFixed(2)}, maks ×2). Persingkat teks atau pilih durasi lebih panjang.</span>`:`✓ Muat dalam ${P.D} detik · kecepatan TTS tetap ×${P.r.toFixed(2)} untuk seluruh video.`)+(P.cal?' Terkalibrasi ✔':' <span class="warn">Belum dikalibrasi</span> — klik 🎚 Kalibrasi TTS.');
+if(!running)draw(0,false)}
+function measure(tx){return new Promise(res=>{try{SS.cancel()}catch(e){}setTimeout(()=>{const u=mkUtt(tx,CALR);u.volume=.05;let t0=0,done=0,to;const tsp=performance.now();
+const fin=ok=>{if(done)return;done=1;clearTimeout(to);res(ok?(performance.now()-(t0||tsp))/1000*CALR:null)};
+u.onstart=()=>{if(!t0)t0=performance.now()};u.onend=()=>fin(1);u.onerror=e=>{if(e&&(e.error==='interrupted'||e.error==='canceled'))return;fin(0)};
+to=setTimeout(()=>{try{SS.cancel()}catch(e){}fin(0)},Math.max(5000,tx.length*160));try{SS.resume();SS.speak(u)}catch(e){fin(0)}},90)})}
+async function calibrate(){if(!$('tts').checked||!('speechSynthesis' in window)){setSt('TTS nonaktif/tidak didukung: pakai estimasi.');check();return}
+const todo=[...new Set(pieces().map(p=>p.text).filter(t=>CAL[ckey(t)]==null))];let n=0;calFail=0;
+for(const tx of todo){setSt(`🎚 Kalibrasi ${++n}/${todo.length}: “${tx.slice(0,28)}…”`);
+const d=await measure(tx);if(d==null||d<.15){calFail++;CAL[ckey(tx)]=tx.length*SPC}else CAL[ckey(tx)]=d}
+try{localStorage.setItem('quizCAL',JSON.stringify(CAL))}catch(e){}
+check();const P=plan();
+setSt(`✓ Kalibrasi selesai · teks ${P.S.toFixed(1)} dtk pada kecepatan normal → TTS ×${P.r.toFixed(2)}${calFail?` · <span class="warn">${calFail} potongan gagal terukur (pakai estimasi), coba ganti suara</span>`:''}`)}
+function mkUtt(tx,rate){const u=new SpeechSynthesisUtterance(tx),v=voices[+$('voice').value];if(v){u.voice=v;u.lang=v.lang}else u.lang='id-ID';u.rate=rate;u.pitch=.75;return u}
+const sleep=ms=>new Promise(r=>setTimeout(r,Math.max(0,ms)));
+// ucapkan 1 potongan; selesai HANYA saat suara benar-benar selesai. Mengembalikan durasi asli.
+function say(text,rate){return new Promise(res=>{const est=Math.max(.6,text.length*SPC*KC/rate),sp=performance.now();let done=0,ts=0,got=0,tries=0,aid=0,w,w0;
+const fin=ok=>{if(done)return;done=1;clearTimeout(w);clearTimeout(w0);SPK=false;res({d:(performance.now()-(ts||sp))/1000,ok})};
+if(!ON){ts=sp;SPK=true;w=setTimeout(()=>fin(1),est*1000);return}
+const attempt=()=>{const id=++aid,u=mkUtt(text,rate);
+u.onstart=()=>{if(id!==aid)return;got=1;ts=performance.now();SPK=true};
+u.onend=()=>{if(id===aid)fin(1)};
+u.onerror=e=>{if(id!==aid||(e&&(e.error==='interrupted'||e.error==='canceled')))return;fin(0)};
+try{SS.resume();SS.speak(u)}catch(e){fin(0)}
+w0=setTimeout(()=>{if(done||got||SS.speaking)return;if(tries++<1){aid++;try{SS.cancel()}catch(e){}setTimeout(attempt,80)}else fin(0)},3000)};
+attempt();w=setTimeout(()=>{aid++;try{SS.cancel()}catch(e){}fin(0)},(est*2.5+4)*1000)})}
+['q','a','b','c','ans','r','cta','dur','voice','tts'].forEach(k=>$(k).addEventListener('input',()=>{if(k==='voice'){loadSpc();loadK()}check()}));
+['topic','q','a','b','c','ans','r','cta','ch'].forEach(k=>$(k).addEventListener('input',seo));
+// ---------- SEO
+const STOP=new Set('yang dan di ke dari apa siapa adalah ini itu dengan untuk pada dalam atau paling bisa akan juga negara hewan'.split(' '));
+function seo(){const q=$('q').value.replace(/[?.!,]/g,''),kw=[...new Set(q.toLowerCase().split(/\s+/).filter(w=>w.length>3&&!STOP.has(w)))].slice(0,5);
+const tp=$('topic').value.trim(),ans=$('ans').value;
+let title=`${$('q').value.trim()} 🤔 Kuis ${tp} #Shorts`;if(title.length>100)title=`Kuis ${tp}: ${$('q').value.trim()}`.slice(0,91)+' #Shorts';
+const tags=['kuis','quiz','kuis '+tp.toLowerCase(),'trivia','tebak tebakan','shorts','pengetahuan umum',...kw];
+const hs=['#Shorts','#Kuis','#Quiz','#'+tp.replace(/\s+/g,''),'#Trivia',...kw.slice(0,2).map(w=>'#'+w)];
+$('sT').value=title.slice(0,100);
+$('sD').value=`${$('q').value}\n\nA. ${$('a').value}\nB. ${$('b').value}\nC. ${$('c').value}\n\nJawaban ada di akhir video! Tulis jawabanmu di kolom komentar 👇\n\n${$('cta').value}\n\n${hs.join(' ')}`;
+$('sG').value=tags.join(', ')}
+document.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText($(b.dataset.cp).value);b.textContent='Tersalin ✓';setTimeout(()=>b.textContent=b.textContent.replace(' ✓',''),1200)});
+// ---------- drawing
+const cv=$('cv'),ctx=cv.getContext('2d');cv.width=720;cv.height=1280;const K=720/540;
+const FONT='"Chalkboard SE","Comic Sans MS","Segoe Print",cursive';
+function rr(x,y,w,h,r,f,s){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(f){ctx.fillStyle=f;ctx.fill()}if(s){ctx.strokeStyle=s;ctx.stroke()}}
+function wrap(t,w,font){ctx.font=font;const ws=t.split(' ');let l='',o=[];for(const x of ws){const n=l?l+' '+x:x;if(ctx.measureText(n).width>w&&l){o.push(l);l=x}else l=n}if(l)o.push(l);return o}
+function arm(sx,sy,ex,ey,hx,hy){ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#2e7d32';ctx.lineWidth=34;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='#f1c9a0';ctx.beginPath();ctx.arc(hx,hy,16,0,7);ctx.fill()}
+function man(t,mode,talk){const cx=270,hy=765;ctx.save();ctx.translate(0,Math.sin(t*3)*2);
+const s=Math.sin(t*5);
+if(mode==='think'){arm(cx-90,860,cx-120,920,cx-112,955);arm(cx+90,860,cx+120,880,cx+30,822)}
+else if(mode==='cheer'){const w=Math.sin(t*14)*10;arm(cx-90,860,cx-140,800,cx-130,700+w);arm(cx+90,860,cx+140,800,cx+130,700-w)}
+else{arm(cx-90,860,cx-120,920,cx-112,955);arm(cx+90,860,cx+130,900,cx+125,860+(talk?s*14:0))}
+ctx.fillStyle='#2e7d32';rr(cx-105,830,210,140,40,'#2e7d32');
+ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(cx-30,830);ctx.lineTo(cx+30,830);ctx.lineTo(cx,905);ctx.fill();
+ctx.fillStyle='#1b5e20';ctx.beginPath();ctx.moveTo(cx-9,845);ctx.lineTo(cx+9,845);ctx.lineTo(cx+13,900);ctx.lineTo(cx,915);ctx.lineTo(cx-13,900);ctx.fill();
+ctx.fillStyle='#f1c9a0';ctx.fillRect(cx-15,805,30,30);
+ctx.beginPath();ctx.arc(cx-58,hy,11,0,7);ctx.arc(cx+58,hy,11,0,7);ctx.fill();
+ctx.beginPath();ctx.ellipse(cx,hy,58,64,0,0,7);ctx.fill();
+ctx.fillStyle='#3e2723';ctx.beginPath();ctx.ellipse(cx,hy-34,60,34,0,Math.PI,0);ctx.lineTo(cx+50,hy-30);ctx.quadraticCurveTo(cx,hy-48,cx-50,hy-30);ctx.fill();
+// stubble
+ctx.fillStyle='rgba(62,39,35,.18)';ctx.beginPath();ctx.ellipse(cx,hy+30,44,30,0,0,Math.PI);ctx.fill();
+const up=mode==='think',blink=(t%4)<.12,ex=up?5:0,ey=up?-4:0;
+ctx.strokeStyle='#222';ctx.lineWidth=4;ctx.beginPath();ctx.arc(cx-26,hy-4,18,0,7);ctx.arc(cx+26,hy-4,18,0,7);ctx.moveTo(cx-8,hy-6);ctx.lineTo(cx+8,hy-6);ctx.stroke();
+ctx.fillStyle='rgba(200,230,255,.25)';ctx.beginPath();ctx.arc(cx-26,hy-4,17,0,7);ctx.arc(cx+26,hy-4,17,0,7);ctx.fill();
+ctx.fillStyle='#222';if(blink){ctx.fillRect(cx-32,hy-5,12,3);ctx.fillRect(cx+20,hy-5,12,3)}else{ctx.beginPath();ctx.arc(cx-26+ex,hy-4+ey,5,0,7);ctx.arc(cx+26+ex,hy-4+ey,5,0,7);ctx.fill()}
+ctx.strokeStyle='#3e2723';ctx.lineWidth=5;ctx.beginPath();
+if(up){ctx.moveTo(cx-42,hy-34);ctx.lineTo(cx-12,hy-28);ctx.moveTo(cx+12,hy-38);ctx.lineTo(cx+42,hy-44)}
+else if(mode==='cheer'){ctx.moveTo(cx-42,hy-38);ctx.lineTo(cx-12,hy-40);ctx.moveTo(cx+12,hy-40);ctx.lineTo(cx+42,hy-38)}
+else{ctx.moveTo(cx-42,hy-32);ctx.lineTo(cx-12,hy-32);ctx.moveTo(cx+12,hy-32);ctx.lineTo(cx+42,hy-32)}ctx.stroke();
+ctx.fillStyle='#7a2e2e';ctx.strokeStyle='#7a2e2e';ctx.lineWidth=4;
+if(mode==='cheer'){ctx.beginPath();ctx.arc(cx,hy+22,22,0,Math.PI);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(cx-16,hy+22,32,6)}
+else if(mode==='think'){ctx.beginPath();ctx.moveTo(cx-12,hy+36);ctx.quadraticCurveTo(cx,hy+30,cx+12,hy+38);ctx.stroke()}
+else{const o=talk?3+Math.abs(Math.sin(t*13))*9:3;ctx.beginPath();ctx.ellipse(cx,hy+34,14,o,0,0,7);ctx.fill()}
+ctx.restore();
+if(mode==='think'){const p=1+Math.sin(t*6)*.08;ctx.fillStyle='#fff';ctx.strokeStyle='#2e7d32';ctx.lineWidth=3;
+[[cx+90,720,7],[cx+105,696,10]].forEach(([x,y,r])=>{ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();ctx.stroke()});
+ctx.beginPath();ctx.ellipse(cx+150,640,42*p,32*p,0,0,7);ctx.fill();ctx.stroke();ctx.fillStyle='#2e7d32';ctx.font='bold 40px sans-serif';ctx.textAlign='center';ctx.fillText('?',cx+150,654)}}
+function confetti(t){const cols=['#ffd54f','#ef5350','#42a5f5','#66bb6a','#ab47bc'];for(let i=0;i<46;i++){const sd=(i*9301+49297)%233280/233280,sd2=(i*7919+13)%1000/1000;
+const x=sd*W0,y=(t*220*(.6+sd2)+sd2*400)%960-40;ctx.fillStyle=cols[i%5];ctx.save();ctx.translate(x,y);ctx.rotate(t*5+i);ctx.fillRect(-4,-2,8,5);ctx.restore()}}
+const W0=540;
+function draw(t,speaking){const ans=$('ans').value,Z=ST,ph=Z.ph;
+const mode=ph==='cd'?'think':(ph==='ans'&&t<Z.phT+REV)?'cheer':'talk';
+ctx.setTransform(K,0,0,K,0,0);ctx.clearRect(0,0,540,960);
+const g=ctx.createLinearGradient(0,0,0,960);g.addColorStop(0,'#e8f5e9');g.addColorStop(1,'#c8e6c9');ctx.fillStyle=g;ctx.fillRect(0,0,540,960);
+ctx.fillStyle='rgba(46,125,50,.07)';for(let i=0;i<6;i++){ctx.beginPath();ctx.arc(60+i*95,570+(i%2)*30,50,0,7);ctx.fill()}
+ctx.textAlign='center';rr(150,22,240,36,18,'#2e7d32');ctx.fillStyle='#fff';ctx.font='bold 17px sans-serif';ctx.fillText('🎓 '+($('ch').value||'Kuis').slice(0,22),270,46);
+ctx.fillStyle='#1b5e20';ctx.font='bold 14px sans-serif';ctx.fillText('KUIS '+$('topic').value.toUpperCase().slice(0,24),270,84);
+ctx.lineWidth=10;rr(25,100,490,470,14,'#2f6b43','#8d6e63');
+const ql=wrap($('q').value,430,`bold 28px ${FONT}`);ctx.font=`bold 28px ${FONT}`;ctx.fillStyle='#fffde7';ctx.textAlign='center';
+ql.slice(0,4).forEach((l,i)=>ctx.fillText(l,270,148+i*36));
+let y=148+Math.min(ql.length,4)*36+14;const rev=ph==='ans'||ph==='cta';
+['A','B','C'].forEach(k=>{const right=k===ans;
+if(!Z.idle&&!rev&&!Z.started[k]){y+=50;return}
+ctx.globalAlpha=rev&&!right?.35:1;
+if(rev&&right)rr(55,y-26,430,42,10,'rgba(255,235,59,.25)');
+else if(!rev&&Z.active===k)rr(55,y-26,430,42,10,'rgba(255,255,255,.16)');
+ctx.font=`bold 24px ${FONT}`;ctx.textAlign='left';ctx.fillStyle=rev&&right?'#ffee58':'#fff';
+ctx.fillText(`${k}.  ${opt(k)}`.slice(0,34)+(rev&&right?'  ✓':''),72,y);ctx.globalAlpha=1;y+=50});
+if(rev&&Z.rT!=null){const rl=wrap('💡 '+$('r').value,420,`20px ${FONT}`);ctx.font=`20px ${FONT}`;ctx.fillStyle='#c8f7d0';ctx.textAlign='center';
+ctx.globalAlpha=Math.max(0,Math.min(1,(t-Z.rT+.1)*3));rl.slice(0,4).forEach((l,i)=>ctx.fillText(l,270,y+8+i*26));ctx.globalAlpha=1}
+ctx.fillStyle='#6d4c41';ctx.fillRect(60,566,420,10);
+if(ph==='cd'){const rem=Math.max(0,Math.min(CD,Z.phT+CD-t)),n=Math.max(1,Math.ceil(rem)),fr=rem-Math.floor(rem),sc=1+fr*.15;
+ctx.save();ctx.translate(270,622);ctx.scale(sc,sc);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,0,40,0,7);ctx.fill();
+ctx.strokeStyle='#e0e0e0';ctx.lineWidth=7;ctx.stroke();ctx.strokeStyle='#ff7043';ctx.beginPath();ctx.arc(0,0,40,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-fr));ctx.stroke();
+ctx.fillStyle='#e64a19';ctx.font='bold 44px sans-serif';ctx.textAlign='center';ctx.fillText(n,0,15);ctx.restore()}
+if(ph==='ans'&&t<Z.phT+1.8){ctx.textAlign='center';ctx.fillStyle='#1b5e20';ctx.font='bold 34px sans-serif';ctx.fillText('🎉 Jawaban: '+ans,270,630)}
+if(ph==='cta'){const p=1+Math.sin(t*7)*.04;ctx.save();ctx.translate(270,622);ctx.scale(p,p);rr(-210,-32,420,64,32,'#c62828');ctx.fillStyle='#fff';ctx.font='bold 24px sans-serif';ctx.textAlign='center';ctx.fillText('👍 LIKE · SUBSCRIBE · FOLLOW',0,9);ctx.restore()}
+if(mode==='cheer')confetti(t-Z.phT);
+man(t,mode,speaking&&mode!=='think');
+ctx.fillStyle='rgba(46,125,50,.2)';ctx.fillRect(0,954,540,6);ctx.fillStyle='#2e7d32';ctx.fillRect(0,954,540*Math.min(1,t/Z.D),6)}
+// ---------- audio
+let ac,dest;
+function beep(f,d,v=.25,type='sine'){if(!ac||!ac.createOscillator)return;const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);g.connect(dest);o.start();o.stop(ac.currentTime+d)}
+// ---------- run (urutan berbasis suara nyata)
+function setSt(x){$('st').innerHTML=x}
+async function run(exp){if(running)return;running=true;$('pl').disabled=$('ex').disabled=true;
+try{await run2(exp)}catch(e){console.error(e);setSt('<span class="warn">Error: '+e.message+'</span>')}
+running=false;$('pl').disabled=$('ex').disabled=false}
+async function run2(exp){
+try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();await ac.resume()}catch(e){ac=null}
+if(!ac){ac={createMediaStreamDestination(){return{stream:new MediaStream()}}}}
+dest=ac.createMediaStreamDestination();
+const D=+$('dur').value,ps=pieces();let rec,chunks=[],mime='',tabS=null;
+ON=$('tts').checked&&('speechSynthesis' in window);loadSpc();loadK();
+if(ON&&!plan().cal)await calibrate();
+const PL=plan();
+if(exp){const st=cv.captureStream(30);dest.stream.getAudioTracks().forEach(x=>st.addTrack(x));
+if($('tab').checked){try{tabS=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true,preferCurrentTab:true});tabS.getAudioTracks().forEach(x=>st.addTrack(x))}catch(e){setSt('<span class="warn">Audio tab tidak diizinkan, video tanpa suara TTS.</span>')}}
+mime=['video/mp4;codecs=avc1,mp4a.40.2','video/webm;codecs=vp9,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'';
+rec=new MediaRecorder(st,mime?{mimeType:mime,videoBitsPerSecond:6e6}:{});rec.ondataavailable=e=>e.data.size&&chunks.push(e.data)}
+if(ON){SS.cancel();await sleep(120)}
+ST={idle:false,ph:'q',phT:0,started:{},active:null,rT:null,D,rate:1,done:false};
+const t0=performance.now(),now=()=>(performance.now()-t0)/1000,until=t=>sleep((t-now())*1000);
+if(rec)rec.start(250);
+(function f(){if(ST.done)return;const t=now();draw(t,SPK);setSt(`${exp?'🔴 Merekam':'▶ Preview'} ${t.toFixed(1)} / ${D}s · TTS ×${ST.rate.toFixed(2)}`);requestAnimationFrame(f)})();
+let failed=0,pred=0,act=0;
+async function group(g){const list=PL.ps.filter(x=>x.seg===g);for(let i=0;i<list.length;i++){const p=list[i],rate=PL.r;ST.rate=rate;
+ST.active=p.id;ST.started[p.id]=1;if(p.id==='r')ST.rT=now();
+const r=await say(p.text,rate);if(r.ok){pred+=dur1(p)/rate;act+=r.d}else failed++;
+const last=g==='cta'&&i===list.length-1;if(!last)await sleep((GAP+PL.extra)*1000)}
+ST.active=null}
+await group('q');await sleep(250);
+ST.ph='cd';ST.phT=now();for(let i=0;i<5;i++){beep(i===4?880:520,.15,.3,'square');await until(ST.phT+i+1)}
+ST.ph='ans';ST.phT=now();beep(660,.25);setTimeout(()=>beep(880,.35),150);setTimeout(()=>beep(1175,.5),320);await until(ST.phT+REV);
+await group('ans');
+ST.ph='cta';ST.phT=now();await group('cta');
+await until(D);await sleep(150);
+const total=now();ST.done=true;SPK=false;draw(Math.min(total,D),false);
+if(pred>3&&act>0){KC=Math.min(1.6,Math.max(.6,KC*act/pred));try{localStorage.setItem('k|'+vname(),String(KC))}catch(e){}}
+if(exp){await new Promise(r=>{rec.onstop=r;rec.stop()});if(tabS)tabS.getTracks().forEach(x=>x.stop());
+const ext=mime.includes('mp4')?'mp4':'webm',blob=new Blob(chunks,{type:mime||'video/webm'}),a=document.createElement('a');
+a.href=URL.createObjectURL(blob);a.download=`kuis-shorts-${D}s.${ext}`;document.body.appendChild(a);a.click();a.remove();
+setSt(`✓ Selesai (${total.toFixed(1)}s dari target ${D}s, ${ext.toUpperCase()}, 720×1280). Jika unduhan tidak mulai, <a href="${a.href}" download="${a.download}">klik di sini</a>.`)}
+else setSt(`✓ Preview selesai: ${total.toFixed(1)}s dari target ${D}s${failed?` · <span class="warn">${failed} potongan suara tidak terdeteksi, coba ganti suara</span>`:''}.`);
+check()}
+$('cal').onclick=async()=>{if(running)return;running=true;$('pl').disabled=$('ex').disabled=$('cal').disabled=true;try{loadK();await calibrate()}catch(e){setSt('Kalibrasi gagal: '+e.message)}running=false;$('pl').disabled=$('ex').disabled=$('cal').disabled=false};$('pl').onclick=()=>run(false);$('ex').onclick=()=>run(true);
+$('jsn').onclick=()=>{const id=($('topic').value+'-'+$('q').value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'kuis';
+const cfg={id,topic:$('topic').value,channel:$('ch').value,duration:+$('dur').value,question:$('q').value,options:{A:$('a').value,B:$('b').value,C:$('c').value},answer:$('ans').value,reason:$('r').value,cta:$('cta').value,voice:'id-ID-ArdiNeural',music:'assets/music.mp3',musicVolume:0.12};
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}));a.download=id+'.json';document.body.appendChild(a);a.click();a.remove();setSt('✓ Config disimpan. Taruh di folder configs/ repo GitHub (boleh digabung jadi array).')};
+loadVoices();loadSpc();load(SAMPLES[0]);
+</script></body></html>
