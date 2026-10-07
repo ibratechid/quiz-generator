@@ -1,0 +1,146 @@
+{
+  "defaults": {
+    "channel": "World Facts Daily",
+    "voice": "id-ID-ArdiNeural",
+    "music": "assets/music.mp3",
+    "musicVolume": 0.12,
+    "cta": "Suka fakta unik? Subscribe World Facts Daily dan tulis skormu di komentar!"
+  },
+  "quizzes": [
+    {
+      "id": "d01-pagi",
+      "slot": "pagi",
+      "theme": "black",
+      "topic": "Sejarah",
+      "duration": 30,
+      "question": "Cleopatra hidup lebih dekat ke masa apa?",
+      "options": {
+        "A": "Pembangunan Piramida Giza",
+        "B": "Pendaratan manusia di Bulan",
+        "C": "Sama jauhnya"
+      },
+      "answer": "B",
+      "reason": "Piramida Giza dibangun sekitar 2.500 tahun sebelum Cleopatra, sedangkan pendaratan di Bulan terjadi sekitar 2.000 tahun sesudahnya."
+    },
+    {
+      "id": "d01-siang",
+      "slot": "siang",
+      "theme": "green",
+      "topic": "Sejarah",
+      "duration": 30,
+      "question": "Mana yang lebih tua: Universitas Oxford atau Kekaisaran Aztec?",
+      "options": {
+        "A": "Universitas Oxford",
+        "B": "Kekaisaran Aztec",
+        "C": "Sama tuanya"
+      },
+      "answer": "A",
+      "reason": "Pengajaran di Oxford sudah ada sejak sekitar tahun 1096. Tenochtitlan, ibu kota Aztec, baru didirikan tahun 1325."
+    },
+    {
+      "id": "d01-sore",
+      "slot": "sore",
+      "theme": "navy",
+      "topic": "Mitos",
+      "duration": 30,
+      "question": "Tembok Besar China terlihat jelas dari Bulan?",
+      "options": {
+        "A": "Ya, sangat jelas",
+        "B": "Tidak terlihat jelas",
+        "C": "Hanya saat malam"
+      },
+      "answer": "B",
+      "reason": "Dari Bulan jaraknya sekitar 384 ribu kilometer, dan tembok itu terlalu sempit untuk terlihat dengan mata telanjang."
+    },
+    {
+      "id": "d02-pagi",
+      "slot": "pagi",
+      "theme": "black",
+      "topic": "Sains",
+      "duration": 30,
+      "question": "Mana yang muncul lebih dulu di Bumi?",
+      "options": {
+        "A": "Pohon",
+        "B": "Hiu",
+        "C": "Dinosaurus"
+      },
+      "answer": "B",
+      "reason": "Hiu muncul sekitar 450 juta tahun lalu, pohon sekitar 385 juta tahun lalu, dan dinosaurus sekitar 230 juta tahun lalu."
+    },
+    {
+      "id": "d02-siang",
+      "slot": "siang",
+      "theme": "green",
+      "topic": "Indonesia",
+      "duration": 30,
+      "question": "Letusan Krakatau 1883 terdengar sejauh apa?",
+      "options": {
+        "A": "Sekitar 500 km",
+        "B": "Sekitar 1.500 km",
+        "C": "Sekitar 4.800 km"
+      },
+      "answer": "C",
+      "reason": "Suara letusannya dilaporkan terdengar sampai Pulau Rodrigues di Samudra Hindia, sekitar 4.800 kilometer jauhnya."
+    },
+    {
+      "id": "d02-sore",
+      "slot": "sore",
+      "theme": "navy",
+      "topic": "Hewan",
+      "duration": 30,
+      "question": "Hewan apa yang kotorannya berbentuk kubus?",
+      "options": {
+        "A": "Wombat",
+        "B": "Kanguru",
+        "C": "Koala"
+      },
+      "answer": "A",
+      "reason": "Usus wombat membentuk kotoran kubus, sehingga tidak menggelinding dan mudah dipakai menandai wilayah."
+    },
+    {
+      "id": "d03-pagi",
+      "slot": "pagi",
+      "theme": "black",
+      "topic": "Antariksa",
+      "duration": 30,
+      "question": "Planet mana yang berputar paling lambat?",
+      "options": {
+        "A": "Merkurius",
+        "B": "Venus",
+        "C": "Mars"
+      },
+      "answer": "B",
+      "reason": "Venus butuh sekitar 243 hari Bumi untuk berputar sekali, lebih lama dari satu tahunnya yang 225 hari."
+    },
+    {
+      "id": "d03-siang",
+      "slot": "siang",
+      "theme": "green",
+      "topic": "Tubuh",
+      "duration": 30,
+      "question": "Bayi baru lahir punya sekitar berapa tulang?",
+      "options": {
+        "A": "206",
+        "B": "Sekitar 300",
+        "C": "150"
+      },
+      "answer": "B",
+      "reason": "Banyak tulang bayi masih terpisah atau berupa tulang rawan, lalu menyatu menjadi 206 tulang saat dewasa."
+    },
+    {
+      "id": "d03-sore",
+      "slot": "sore",
+      "theme": "navy",
+      "topic": "Mitos",
+      "duration": 30,
+      "question": "Warna asli Matahari sebenarnya apa?",
+      "options": {
+        "A": "Kuning",
+        "B": "Putih",
+        "C": "Oranye"
+      },
+      "answer": "B",
+      "reason": "Matahari memancarkan semua warna sehingga tampak putih. Atmosfer Bumi membuatnya terlihat kekuningan dari bawah."
+    }
+  ]
+}
