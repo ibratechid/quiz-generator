@@ -1,0 +1,154 @@
+{
+  "defaults": {
+    "channel": "World Facts Daily",
+    "voice": "id-ID-ArdiNeural",
+    "music": "assets/music.mp3",
+    "musicVolume": 0.12,
+    "cta": "Suka fakta unik? Subscribe World Facts Daily dan tulis skormu di komentar!"
+  },
+  "quizzes": [
+    {
+      "id": "wf-01-cleopatra",
+      "topic": "Sejarah",
+      "duration": 35,
+      "question": "Cleopatra hidup lebih dekat ke masa apa?",
+      "options": {
+        "A": "Pembangunan Piramida Giza",
+        "B": "Pendaratan manusia di Bulan",
+        "C": "Sama jauhnya"
+      },
+      "answer": "B",
+      "reason": "Piramida Giza dibangun sekitar 2.500 tahun sebelum Cleopatra, sedangkan pendaratan di Bulan terjadi sekitar 2.000 tahun sesudahnya."
+    },
+    {
+      "id": "wf-02-oxford",
+      "topic": "Sejarah",
+      "duration": 30,
+      "question": "Mana yang lebih tua: Universitas Oxford atau Kekaisaran Aztec?",
+      "options": {
+        "A": "Universitas Oxford",
+        "B": "Kekaisaran Aztec",
+        "C": "Sama tuanya"
+      },
+      "answer": "A",
+      "reason": "Pengajaran di Oxford sudah ada sejak sekitar tahun 1096. Tenochtitlan, ibu kota Aztec, baru didirikan tahun 1325."
+    },
+    {
+      "id": "wf-03-hiu",
+      "topic": "Sains",
+      "duration": 35,
+      "question": "Mana yang muncul lebih dulu di Bumi?",
+      "options": {
+        "A": "Pohon",
+        "B": "Hiu",
+        "C": "Dinosaurus"
+      },
+      "answer": "B",
+      "reason": "Hiu muncul sekitar 450 juta tahun lalu, pohon sekitar 385 juta tahun lalu, dan dinosaurus baru sekitar 230 juta tahun lalu."
+    },
+    {
+      "id": "wf-04-venus",
+      "topic": "Antariksa",
+      "duration": 30,
+      "question": "Planet mana yang berputar paling lambat?",
+      "options": {
+        "A": "Merkurius",
+        "B": "Venus",
+        "C": "Mars"
+      },
+      "answer": "B",
+      "reason": "Venus butuh sekitar 243 hari Bumi untuk berputar sekali, lebih lama dari satu tahunnya yang 225 hari."
+    },
+    {
+      "id": "wf-05-pisang",
+      "topic": "Sains",
+      "duration": 30,
+      "question": "Mana yang secara botani termasuk buah beri sejati?",
+      "options": {
+        "A": "Stroberi",
+        "B": "Pisang",
+        "C": "Raspberry"
+      },
+      "answer": "B",
+      "reason": "Pisang berasal dari satu bakal buah dengan banyak biji, jadi termasuk beri sejati. Stroberi dan raspberry bukan."
+    },
+    {
+      "id": "wf-06-wombat",
+      "topic": "Hewan",
+      "duration": 30,
+      "question": "Hewan apa yang kotorannya berbentuk kubus?",
+      "options": {
+        "A": "Wombat",
+        "B": "Kanguru",
+        "C": "Koala"
+      },
+      "answer": "A",
+      "reason": "Usus wombat membentuk kotoran kubus, sehingga tidak menggelinding dan mudah dipakai menandai wilayah."
+    },
+    {
+      "id": "wf-07-antartika",
+      "topic": "Geografi",
+      "duration": 30,
+      "question": "Benua mana yang tidak memiliki nyamuk?",
+      "options": {
+        "A": "Eropa",
+        "B": "Australia",
+        "C": "Antartika"
+      },
+      "answer": "C",
+      "reason": "Antartika terlalu dingin dan kering untuk siklus hidup nyamuk, jadi benua ini bebas nyamuk."
+    },
+    {
+      "id": "wf-08-gunung-berapi",
+      "topic": "Geografi",
+      "duration": 30,
+      "question": "Negara mana yang punya gunung berapi aktif terbanyak di dunia?",
+      "options": {
+        "A": "Jepang",
+        "B": "Indonesia",
+        "C": "Amerika Serikat"
+      },
+      "answer": "B",
+      "reason": "Indonesia berada di Cincin Api Pasifik dan memiliki sekitar seratus dua puluhan gunung berapi aktif, terbanyak di dunia."
+    },
+    {
+      "id": "wf-09-eiffel",
+      "topic": "Fakta Unik",
+      "duration": 30,
+      "question": "Apa yang terjadi pada Menara Eiffel saat musim panas?",
+      "options": {
+        "A": "Miring ke kiri",
+        "B": "Bertambah tinggi",
+        "C": "Berubah warna"
+      },
+      "answer": "B",
+      "reason": "Besi memuai saat panas, sehingga Menara Eiffel bisa bertambah tinggi sekitar 15 sentimeter."
+    },
+    {
+      "id": "wf-10-madu",
+      "topic": "Makanan",
+      "duration": 30,
+      "question": "Makanan apa yang hampir tidak pernah basi?",
+      "options": {
+        "A": "Madu",
+        "B": "Susu",
+        "C": "Roti"
+      },
+      "answer": "A",
+      "reason": "Madu sangat rendah air dan bersifat asam, sehingga bakteri sulit hidup. Madu berusia ribuan tahun pernah ditemukan di makam Mesir kuno."
+    },
+    {
+      "id": "wf-11-koala",
+      "topic": "Hewan",
+      "duration": 30,
+      "question": "Hewan mana yang sidik jarinya sangat mirip manusia?",
+      "options": {
+        "A": "Koala",
+        "B": "Anjing",
+        "C": "Kucing"
+      },
+      "answer": "A",
+      "reason": "Sidik jari koala begitu mirip manusia, bahkan sulit dibedakan di bawah mikroskop."
+    }
+  ]
+}
