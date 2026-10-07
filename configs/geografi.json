@@ -1,0 +1,11 @@
+[
+  {
+    "id": "geo-01-canberra",
+    "topic": "Geografi",
+    "duration": 30,
+    "question": "Apa ibu kota negara Australia?",
+    "options": { "A": "Sydney", "B": "Melbourne", "C": "Canberra" },
+    "answer": "C",
+    "reason": "Canberra dipilih sebagai ibu kota sebagai kompromi antara Sydney dan Melbourne."
+  }
+]

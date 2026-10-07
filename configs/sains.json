@@ -1,0 +1,28 @@
+{
+  "defaults": {
+    "channel": "Kuis Pintar",
+    "voice": "id-ID-ArdiNeural",
+    "duration": 30,
+    "music": "assets/music.mp3",
+    "musicVolume": 0.12
+  },
+  "quizzes": [
+    {
+      "id": "sains-01-planet-merah",
+      "topic": "Sains",
+      "question": "Planet apa yang dijuluki Planet Merah?",
+      "options": { "A": "Venus", "B": "Mars", "C": "Jupiter" },
+      "answer": "B",
+      "reason": "Mars tampak merah karena permukaannya kaya besi oksida, atau karat."
+    },
+    {
+      "id": "sains-02-gurita",
+      "topic": "Biologi",
+      "duration": 45,
+      "question": "Hewan apa yang memiliki tiga jantung?",
+      "options": { "A": "Gurita", "B": "Gajah", "C": "Lebah" },
+      "answer": "A",
+      "reason": "Gurita punya tiga jantung. Dua untuk memompa darah ke insang, dan satu untuk seluruh tubuh."
+    }
+  ]
+}
