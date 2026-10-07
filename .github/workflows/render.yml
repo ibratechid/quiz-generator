@@ -1,0 +1,102 @@
+name: Render Quiz Shorts
+
+on:
+  workflow_dispatch:
+    inputs:
+      config:
+        description: 'File config (mis. configs/sains.json) atau "all"'
+        default: 'all'
+      only:
+        description: 'Opsional: render id tertentu saja (pisahkan koma)'
+        default: ''
+      release:
+        description: 'Buat GitHub Release berisi semua MP4 + SEO'
+        type: boolean
+        default: false
+  push:
+    paths: ['configs/**', 'js/**', 'assets/**']
+
+permissions:
+  contents: write
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.ls.outputs.files }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: ls
+        run: |
+          if [ "${{ github.event.inputs.config }}" != "" ] && [ "${{ github.event.inputs.config }}" != "all" ]; then
+            files=$(printf '%s\n' "${{ github.event.inputs.config }}" | jq -R -s -c 'split("\n")[:-1]')
+          else
+            files=$(ls configs/*.json | jq -R -s -c 'split("\n")[:-1]')
+          fi
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+          echo "Config: $files"
+
+  render:
+    needs: list
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        file: ${{ fromJson(needs.list.outputs.files) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+
+      - name: Install system deps (ffmpeg, fonts)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-comic-neue fonts-noto-color-emoji fonts-dejavu-core
+          fc-cache -f
+          ffmpeg -version | head -1
+
+      - name: Install edge-tts + node deps
+        run: |
+          pip install edge-tts
+          npm install --no-audit --no-fund
+
+      - name: Cache TTS audio
+        uses: actions/cache@v4
+        with:
+          path: .cache/tts
+          key: tts-${{ hashFiles(matrix.file) }}
+          restore-keys: tts-
+
+      - name: Render videos
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: |
+          ONLY="${{ github.event.inputs.only }}"
+          if [ -n "$ONLY" ]; then node js/render.js "${{ matrix.file }}" --only "$ONLY"
+          else node js/render.js "${{ matrix.file }}"; fi
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-${{ strategy.job-index }}
+          path: out/*
+          if-no-files-found: warn
+          retention-days: 14
+
+  release:
+    needs: render
+    if: ${{ github.event.inputs.release == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, pattern: 'shorts-*', merge-multiple: true }
+      - name: Create release
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          tag="shorts-$(date +%Y%m%d-%H%M%S)"
+          gh release create "$tag" dist/* --repo "${{ github.repository }}" --title "Shorts $tag" --notes "MP4 + SEO metadata"
