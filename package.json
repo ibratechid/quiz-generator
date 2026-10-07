@@ -1,0 +1,10 @@
+{
+  "name": "quiz-shorts-renderer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "render": "node js/render.js configs/*.json",
+    "render:one": "node js/render.js"
+  },
+  "dependencies": { "puppeteer-core": "^22.15.0" }
+}
